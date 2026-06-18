@@ -170,7 +170,7 @@ class RAGEngine:
         end_id = float('inf')
         if target_topic:
             for t in self.topics:
-                if t["topic_id"] == target_topic:
+                if str(t["topic_id"]) == str(target_topic):
                     start_id = t.get("start_msg_id", 0)
                     end_id = t.get("end_msg_id", float('inf'))
                     break
