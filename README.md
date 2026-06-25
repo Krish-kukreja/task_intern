@@ -29,6 +29,27 @@ pinned: false
 
 Kastack AI Chat is a full-stack RAG (Retrieval-Augmented Generation) system that processes 191,592 messages across 11,001 conversation days. It detects topic changes chronologically, creates 100-message checkpoint summaries, extracts user personas, and answers natural language queries using grounded retrieval.
 
+### 🔄 Round 2 Features
+Round 2 of the Kastack architecture introduces continuous context, shifting emotional arcs, intent-based routing, and a multi-device data sync layer. Instead of a basic vector search over isolated documents, this architecture treats user history as a living stream of evolving sentiments, allowing the assistant to understand both **what** was said and **how feelings changed over time**. It includes four primary subsystems: Intent Classification, Affect & Drift Detection, RAG Conflict Resolution, and Offline CRDT Sync.
+
+```mermaid
+flowchart TD
+    A[Text Input] --> B(Intent Classifier)
+    A --> C(Affect & Emotion Lexicon)
+    
+    C --> D(Drift Timeline)
+    C --> E(Triggers Extraction)
+    
+    F[(Message Store)] --> G(RAG Conflict Resolver)
+    G --> H[Merged Coherent Answer]
+    
+    D -.-> F
+    E -.-> F
+    
+    I[Offline Devices] <--> J(CRDT Sync Engine)
+    J <--> F
+```
+
 ---
 
 ## 🧠 How Topic Change Detection Works
@@ -235,7 +256,7 @@ python pipeline/persona_extractor.py
 python pipeline/summarizer.py
 ```
 
-### 3. Run Locally
+### 3. Run Locally (Round 1 FastAPI + React)
 ```bash
 # Terminal 1: Frontend dev server
 cd frontend && npm run dev
@@ -243,6 +264,19 @@ cd frontend && npm run dev
 # Terminal 2: Backend
 cd backend && uvicorn app:app --reload --port 7860
 ```
+
+### 4. Run Round 2 Features
+To test the Offline Intent Classifier, Persona Drift, and RAG Conflict Resolution from Round 2:
+```bash
+# Run the Streamlit demo dashboard
+python -m streamlit run backend/round2/app.py
+
+# Run the automated test suite for Round 2
+python -m pytest backend/round2/tests -v
+```
+
+### Data Caveat for Round 2
+The PersonaChat dataset consists of disconnected day-to-day chats where "days" are actually separate pairs of people talking. Treating it as a single continuous user history is biologically/socially incorrect and results in massive topical and emotional whiplash. The Round 2 drift engine has been validated instead on a curated synthetic Demo Arc and real WhatsApp/Telegram exports.
 
 ---
 
